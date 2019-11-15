@@ -20,9 +20,9 @@ if [ "$(id -u)" = "0" ]; then
   # get group of docker inside container
   CUR_DOCKER_GID=`getent group docker | cut -f3 -d: || true`
 
-  # if they don't match, adjust
+  # if they don't match, change the owner group of the 'docker.sock' file
   if [ ! -z "$SOCK_DOCKER_GID" -a "$SOCK_DOCKER_GID" != "$CUR_DOCKER_GID" ]; then
-    groupmod -g ${SOCK_DOCKER_GID} -o docker
+    chown :${CUR_DOCKER_GID} /var/run/docker.sock
   fi
   if ! groups jenkins | grep -q docker; then
     usermod -aG docker jenkins
